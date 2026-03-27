@@ -1,31 +1,64 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
+using NotasNzx.Datos;
+using NotasNzx.Endpoints;
+using NotasNzx.Middleware;
+using NotasNzx.Servicios;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Base de datos SQLite
+builder.Services.AddDbContext<AppDbContext>(opciones =>
+    opciones.UseSqlite(builder.Configuration.GetConnectionString("BaseDatos")));
+
+// Servicios
+builder.Services.AddScoped<INotasServicio, NotasServicio>();
+builder.Services.AddScoped<IAuthServicio, AuthServicio>();
+
+// JWT
+var claveJwt = builder.Configuration["Jwt:Clave"]!;
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opciones =>
+    {
+        opciones.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Emisor"],
+            ValidAudience = builder.Configuration["Jwt:Audiencia"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(claveJwt))
+        };
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
 
-var notas = new List<string>();
-
-app.MapGet("/api/notas", () =>
+app.MapOpenApi();
+app.MapScalarApiReference(opciones =>
 {
-    return notas;
-
-});
-
-app.MapPost("/api/notas", (string nota) =>
-{
-    notas.Add(nota);
-    return Results.Created("/api/notas", nota);
-
-});
-
-app.MapDelete("/api/notas/{index}", (int index) =>
-{
-    if (index < 0 || index >= notas.Count)
+    opciones.Title = "Notas.Nzx";
+    opciones.AddHttpAuthentication("Bearer", bearer =>
     {
-        return  Results.NotFound("Nota no encontrada");
-    }
-
-    notas.RemoveAt(index);
-    return Results.Ok("Nota eliminada");
-
+        bearer.Token = "tu-token-jwt-aquí";
+    });
 });
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Middleware de API Key (solo para /api/notas)
+app.UseMiddleware<ApiKeyMiddleware>();
+
+// Endpoints
+app.MapearAuthEndpoints();
+app.MapearEndpoints();
+app.MapearPerfilEndpoints();
 
 app.Run();
