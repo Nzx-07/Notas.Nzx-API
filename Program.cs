@@ -10,6 +10,21 @@ using NotasNzx.Servicios;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS
+builder.Services.AddCors(opciones =>
+{
+    opciones.AddPolicy("Frontend", politica =>
+    {
+        politica
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://notas-nzx-web.vercel.app"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Base de datos SQLite
 builder.Services.AddDbContext<AppDbContext>(opciones =>
     opciones.UseSqlite(builder.Configuration.GetConnectionString("BaseDatos")));
@@ -49,6 +64,8 @@ app.MapScalarApiReference(opciones =>
         bearer.Token = "tu-token-jwt-aquí";
     });
 });
+
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
