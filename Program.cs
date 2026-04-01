@@ -25,14 +25,32 @@ builder.Services.AddCors(opciones =>
 // Base de datos — PostgreSQL en producción, SQLite en local
 if (builder.Environment.IsProduction())
 {
-    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") 
+                   ?? Environment.GetEnvironmentVariable("ConnectionStrings__BaseDatos");
+    
     if (!string.IsNullOrEmpty(databaseUrl))
     {
-        var uri = new Uri(databaseUrl);
-        var userInfo = uri.UserInfo.Split(':');
-        var npgsqlConnection = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        string npgsqlConnection;
+        
+        if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres://"))
+        {
+            var uri = new Uri(databaseUrl);
+            var userInfo = uri.UserInfo.Split(':');
+            npgsqlConnection = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        }
+        else
+        {
+            npgsqlConnection = databaseUrl;
+        }
+        
         builder.Services.AddDbContext<AppDbContext>(opciones =>
             opciones.UseNpgsql(npgsqlConnection));
+    }
+    else
+    {
+        // Fallback a SQLite si no hay DATABASE_URL
+        builder.Services.AddDbContext<AppDbContext>(opciones =>
+            opciones.UseSqlite("Data Source=notas.db"));
     }
 }
 else
