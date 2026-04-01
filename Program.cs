@@ -16,12 +16,9 @@ builder.Services.AddCors(opciones =>
     opciones.AddPolicy("Frontend", politica =>
     {
         politica
-            .WithOrigins(
-                "http://localhost:5173",
-                "https://notas-nzx-web.vercel.app"
-            )
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 
