@@ -22,9 +22,18 @@ builder.Services.AddCors(opciones =>
     });
 });
 
-// Base de datos SQLite
-builder.Services.AddDbContext<AppDbContext>(opciones =>
-    opciones.UseSqlite(builder.Configuration.GetConnectionString("BaseDatos")));
+// Base de datos — PostgreSQL en producción, SQLite en local
+var connectionString = builder.Configuration.GetConnectionString("BaseDatos");
+if (builder.Environment.IsProduction())
+{
+    builder.Services.AddDbContext<AppDbContext>(opciones =>
+        opciones.UseNpgsql(connectionString));
+}
+else
+{
+    builder.Services.AddDbContext<AppDbContext>(opciones =>
+        opciones.UseSqlite(connectionString));
+}
 
 // Servicios
 builder.Services.AddScoped<INotasServicio, NotasServicio>();
@@ -52,7 +61,6 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Aplicar migraciones automáticamente al iniciar
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

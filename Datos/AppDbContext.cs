@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NotasNzx.Modelos;
+using Microsoft.EntityFrameworkCore;
 
 namespace NotasNzx.Datos;
 
