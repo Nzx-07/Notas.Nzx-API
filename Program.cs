@@ -16,23 +16,29 @@ builder.Services.AddCors(opciones =>
     opciones.AddPolicy("Frontend", politica =>
     {
         politica
+            .AllowAnyOrigin()
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyMethod();
     });
 });
 
 // Base de datos — PostgreSQL en producción, SQLite en local
-var connectionString = builder.Configuration.GetConnectionString("BaseDatos");
 if (builder.Environment.IsProduction())
 {
-    builder.Services.AddDbContext<AppDbContext>(opciones =>
-        opciones.UseNpgsql(connectionString));
+    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    if (!string.IsNullOrEmpty(databaseUrl))
+    {
+        var uri = new Uri(databaseUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        var npgsqlConnection = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        builder.Services.AddDbContext<AppDbContext>(opciones =>
+            opciones.UseNpgsql(npgsqlConnection));
+    }
 }
 else
 {
     builder.Services.AddDbContext<AppDbContext>(opciones =>
-        opciones.UseSqlite(connectionString));
+        opciones.UseSqlite(builder.Configuration.GetConnectionString("BaseDatos")));
 }
 
 // Servicios
@@ -61,8 +67,10 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+// Migraciones automáticas solo en producción
+if (app.Environment.IsProduction())
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
@@ -78,11 +86,10 @@ app.MapScalarApiReference(opciones =>
 });
 
 app.UseCors("Frontend");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Middleware de API Key (solo para /api/notas)
+// Middleware de API Key
 app.UseMiddleware<ApiKeyMiddleware>();
 
 // Endpoints
