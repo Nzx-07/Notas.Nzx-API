@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using NotasNzx.Modelos;
-using Microsoft.EntityFrameworkCore;
 
 namespace NotasNzx.Datos;
 
@@ -8,6 +8,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> opciones) : DbContext(o
 {
     public DbSet<Nota> Notas => Set<Nota>();
     public DbSet<Usuario> Usuarios => Set<Usuario>();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.ConfigureWarnings(w =>
+            w.Ignore(RelationalEventId.PendingModelChangesWarning));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelo)
     {
