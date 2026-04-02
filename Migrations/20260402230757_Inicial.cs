@@ -18,7 +18,11 @@ namespace Notas.Nzx.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     HashContraseña = table.Column<string>(type: "TEXT", nullable: false),
-                    CreadoEn = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    CreadoEn = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Plan = table.Column<int>(type: "INTEGER", nullable: false),
+                    ApiKey = table.Column<string>(type: "TEXT", nullable: false),
+                    RequestsHoy = table.Column<int>(type: "INTEGER", nullable: false),
+                    UltimoReset = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

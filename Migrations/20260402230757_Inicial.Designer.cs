@@ -11,8 +11,8 @@ using NotasNzx.Datos;
 namespace Notas.Nzx.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260327034813_AgregandoPlanYApiKey")]
-    partial class AgregandoPlanYApiKey
+    [Migration("20260402230757_Inicial")]
+    partial class Inicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
