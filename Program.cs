@@ -93,6 +93,8 @@ if (app.Environment.IsProduction())
     db.Database.Migrate();
 }
 
+app.UseCors("Frontend");
+
 app.MapOpenApi();
 app.MapScalarApiReference(opciones =>
 {
@@ -103,7 +105,6 @@ app.MapScalarApiReference(opciones =>
     });
 });
 
-app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
