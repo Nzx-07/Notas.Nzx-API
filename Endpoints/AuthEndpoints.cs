@@ -44,18 +44,25 @@ public static class AuthEndpoints
         .WithSummary("Registrar nuevo usuario");
 
         grupo.MapPost("/login", async (LoginRequest solicitud, IAuthServicio servicio) =>
-        {
-            var token = await servicio.Login(solicitud.Email, solicitud.Contraseña);
+{
+    try
+    {
+        var token = await servicio.Login(solicitud.Email, solicitud.Contraseña);
 
-            if (token is null)
-                return Results.Unauthorized();
+        if (token is null)
+            return Results.Unauthorized();
 
-            return Results.Ok(new Respuesta<LoginRespuesta>(
-                Exito: true,
-                Mensaje: "Login exitoso",
-                Data: new LoginRespuesta(token, solicitud.Email)
-            ));
-        })
-        .WithSummary("Iniciar sesión");
+        return Results.Ok(new Respuesta<LoginRespuesta>(
+            Exito: true,
+            Mensaje: "Login exitoso",
+            Data: new LoginRespuesta(token, solicitud.Email)
+        ));
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message);
+    }
+})
+.WithSummary("Iniciar sesión");
     }
 }
