@@ -22,6 +22,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> opciones) : DbContext(o
             .HasIndex(u => u.Email)
             .IsUnique();
 
+        // Configurar Guid como uuid en PostgreSQL
+        modelo.Entity<Usuario>()
+            .Property(u => u.Id)
+            .HasColumnType("uuid");
+
+        modelo.Entity<Nota>()
+            .Property(n => n.Id)
+            .HasColumnType("uuid");
+
+        modelo.Entity<Nota>()
+            .Property(n => n.UsuarioId)
+            .HasColumnType("uuid");
+
         // Un usuario tiene muchas notas
         modelo.Entity<Nota>()
             .HasOne(n => n.Usuario)
