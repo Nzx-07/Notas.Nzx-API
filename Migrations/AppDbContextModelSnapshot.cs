@@ -28,7 +28,7 @@ namespace Notas.Nzx.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uuid");
@@ -51,7 +51,7 @@ namespace Notas.Nzx.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -68,7 +68,7 @@ namespace Notas.Nzx.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UltimoReset")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

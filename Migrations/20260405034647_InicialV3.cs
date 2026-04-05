@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Notas.Nzx.Migrations
 {
     /// <inheritdoc />
-    public partial class InicialV2 : Migration
+    public partial class InicialV3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,11 +18,11 @@ namespace Notas.Nzx.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     HashContraseña = table.Column<string>(type: "TEXT", nullable: false),
-                    CreadoEn = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreadoEn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Plan = table.Column<int>(type: "INTEGER", nullable: false),
                     ApiKey = table.Column<string>(type: "TEXT", nullable: false),
                     RequestsHoy = table.Column<int>(type: "INTEGER", nullable: false),
-                    UltimoReset = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    UltimoReset = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,7 +35,7 @@ namespace Notas.Nzx.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Contenido = table.Column<string>(type: "TEXT", nullable: false),
-                    CreadoEn = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreadoEn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UsuarioId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>

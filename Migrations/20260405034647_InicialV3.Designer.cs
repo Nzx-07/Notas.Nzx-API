@@ -11,8 +11,8 @@ using NotasNzx.Datos;
 namespace Notas.Nzx.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260405032639_InicialV2")]
-    partial class InicialV2
+    [Migration("20260405034647_InicialV3")]
+    partial class InicialV3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,7 +31,7 @@ namespace Notas.Nzx.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("uuid");
@@ -54,7 +54,7 @@ namespace Notas.Nzx.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreadoEn")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -71,7 +71,7 @@ namespace Notas.Nzx.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("UltimoReset")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

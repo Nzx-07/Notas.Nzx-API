@@ -16,30 +16,42 @@ public class AppDbContext(DbContextOptions<AppDbContext> opciones) : DbContext(o
     }
 
     protected override void OnModelCreating(ModelBuilder modelo)
-    {
-        // Email único por usuario
-        modelo.Entity<Usuario>()
-            .HasIndex(u => u.Email)
-            .IsUnique();
+{
+    // Email único por usuario
+    modelo.Entity<Usuario>()
+        .HasIndex(u => u.Email)
+        .IsUnique();
 
-        // Configurar Guid como uuid en PostgreSQL
-        modelo.Entity<Usuario>()
-            .Property(u => u.Id)
-            .HasColumnType("uuid");
+    // Configurar tipos correctos para PostgreSQL
+    modelo.Entity<Usuario>()
+        .Property(u => u.Id)
+        .HasColumnType("uuid");
 
-        modelo.Entity<Nota>()
-            .Property(n => n.Id)
-            .HasColumnType("uuid");
+    modelo.Entity<Usuario>()
+        .Property(u => u.CreadoEn)
+        .HasColumnType("timestamp with time zone");
 
-        modelo.Entity<Nota>()
-            .Property(n => n.UsuarioId)
-            .HasColumnType("uuid");
+    modelo.Entity<Usuario>()
+        .Property(u => u.UltimoReset)
+        .HasColumnType("timestamp with time zone");
 
-        // Un usuario tiene muchas notas
-        modelo.Entity<Nota>()
-            .HasOne(n => n.Usuario)
-            .WithMany(u => u.Notas)
-            .HasForeignKey(n => n.UsuarioId)
-            .OnDelete(DeleteBehavior.Cascade);
-    }
+    modelo.Entity<Nota>()
+        .Property(n => n.Id)
+        .HasColumnType("uuid");
+
+    modelo.Entity<Nota>()
+        .Property(n => n.UsuarioId)
+        .HasColumnType("uuid");
+
+    modelo.Entity<Nota>()
+        .Property(n => n.CreadoEn)
+        .HasColumnType("timestamp with time zone");
+
+    // Un usuario tiene muchas notas
+    modelo.Entity<Nota>()
+        .HasOne(n => n.Usuario)
+        .WithMany(u => u.Notas)
+        .HasForeignKey(n => n.UsuarioId)
+        .OnDelete(DeleteBehavior.Cascade);
+}
 }
