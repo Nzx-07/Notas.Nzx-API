@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Notas.Nzx.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class InicialV2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,7 +15,7 @@ namespace Notas.Nzx.Migrations
                 name: "Usuarios",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     HashContraseña = table.Column<string>(type: "TEXT", nullable: false),
                     CreadoEn = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -33,10 +33,10 @@ namespace Notas.Nzx.Migrations
                 name: "Notas",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Contenido = table.Column<string>(type: "TEXT", nullable: false),
                     CreadoEn = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UsuarioId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    UsuarioId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {

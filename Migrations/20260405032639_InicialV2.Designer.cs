@@ -11,8 +11,8 @@ using NotasNzx.Datos;
 namespace Notas.Nzx.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260404230035_FixGuidPostgres")]
-    partial class FixGuidPostgres
+    [Migration("20260405032639_InicialV2")]
+    partial class InicialV2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
