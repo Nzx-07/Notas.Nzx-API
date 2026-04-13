@@ -25,3 +25,5 @@ public record PerfilRespuesta(
 
 // Envoltura estándar
 public record Respuesta<T>(bool Exito, string Mensaje, T? Data);
+
+public record ActualizarNotaRequest(string Contenido);

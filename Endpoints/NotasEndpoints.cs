@@ -6,7 +6,7 @@ namespace NotasNzx.Endpoints;
 
 public static class NotasEndpoints
 {
-    public static void MapearEndpoints(this WebApplication app)
+    public static async Task MapearEndpoints(this WebApplication app)
     {
         var grupo = app.MapGroup("/api/notas")
                        .WithTags("Notas")
@@ -73,6 +73,37 @@ public static class NotasEndpoints
             ));
         })
         .WithSummary("Crea una nueva nota");
+
+
+        //PUT actualizar nota
+        grupo.MapPut("/{id:guid}", async (Guid id, ActualizarNotaRequest solicitud, ClaimsPrincipal usuario, INotasServicio servicio) => 
+        {
+            if (string.IsNullOrWhiteSpace(solicitud.Contenido))
+                return Results.BadRequest(new Respuesta <NotaRespuesta>(
+                    Exito: false,
+                    Mensaje: "El contenido no puede estar vacio",
+                    Data: null
+                ));
+
+            var usuarioId = ObtenerUsuarioId(usuario);
+            var nota = await servicio.Actualizar(id, solicitud.Contenido, usuarioId);
+
+            if (nota is null)
+                return Results.NotFound(new Respuesta<NotaRespuesta>(
+                    Exito: false,
+                    Mensaje: "Nota no encontrada",
+                    Data: null
+                ));
+
+            return Results.Ok(new Respuesta<NotaRespuesta>(
+                Exito: true,
+                Mensaje: "Nota Actualizada Correctamente",
+                Data: nota
+            ));
+        })
+        .WithSummary("Actualizar una nota");
+
+
 
         // DELETE eliminar nota
         grupo.MapDelete("/{id:guid}", async (Guid id, ClaimsPrincipal usuario, INotasServicio servicio) =>
