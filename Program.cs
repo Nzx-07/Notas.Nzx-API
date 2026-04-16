@@ -18,7 +18,7 @@ builder.Services.AddCors(opciones =>
         politica
             .WithOrigins(
                 "http://localhots:5173",
-                "http://notas-nzx-web.vercel.app"
+                "https://notas-nzx-web.vercel.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
