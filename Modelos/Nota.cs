@@ -9,4 +9,8 @@ public class Nota
     // Relación con el usuario dueño de la nota
     public Guid UsuarioId { get; set; }
     public Usuario Usuario { get; set; } = null!;
+
+    // Relación opcional con carpeta
+    public Guid? CarpetaId { get; set; }
+    public Carpeta? Carpeta { get; set; }
 }

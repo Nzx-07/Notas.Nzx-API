@@ -65,6 +65,7 @@ else
 // Servicios
 builder.Services.AddScoped<INotasServicio, NotasServicio>();
 builder.Services.AddScoped<IAuthServicio, AuthServicio>();
+builder.Services.AddScoped<ICarpetasServicio, CarpetasServicio>();
 
 // JWT
 var claveJwt = builder.Configuration["Jwt:Clave"]!;
@@ -118,5 +119,6 @@ app.UseMiddleware<ApiKeyMiddleware>();
 app.MapearAuthEndpoints();
 app.MapearEndpoints();
 app.MapearPerfilEndpoints();
+app.MapearCarpetasEndpoints();
 
 app.Run();

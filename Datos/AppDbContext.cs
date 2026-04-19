@@ -8,6 +8,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> opciones) : DbContext(o
 {
     public DbSet<Nota> Notas => Set<Nota>();
     public DbSet<Usuario> Usuarios => Set<Usuario>();
+    public DbSet<Carpeta> Carpetas => Set<Carpeta>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -16,42 +17,67 @@ public class AppDbContext(DbContextOptions<AppDbContext> opciones) : DbContext(o
     }
 
     protected override void OnModelCreating(ModelBuilder modelo)
-{
-    // Email único por usuario
-    modelo.Entity<Usuario>()
-        .HasIndex(u => u.Email)
-        .IsUnique();
+    {
+        modelo.Entity<Usuario>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
 
-    // Configurar tipos correctos para PostgreSQL
-    modelo.Entity<Usuario>()
-        .Property(u => u.Id)
-        .HasColumnType("uuid");
+        modelo.Entity<Usuario>()
+            .Property(u => u.Id)
+            .HasColumnType("uuid");
 
-    modelo.Entity<Usuario>()
-        .Property(u => u.CreadoEn)
-        .HasColumnType("timestamp with time zone");
+        modelo.Entity<Usuario>()
+            .Property(u => u.CreadoEn)
+            .HasColumnType("timestamp with time zone");
 
-    modelo.Entity<Usuario>()
-        .Property(u => u.UltimoReset)
-        .HasColumnType("timestamp with time zone");
+        modelo.Entity<Usuario>()
+            .Property(u => u.UltimoReset)
+            .HasColumnType("timestamp with time zone");
 
-    modelo.Entity<Nota>()
-        .Property(n => n.Id)
-        .HasColumnType("uuid");
+        modelo.Entity<Nota>()
+            .Property(n => n.Id)
+            .HasColumnType("uuid");
 
-    modelo.Entity<Nota>()
-        .Property(n => n.UsuarioId)
-        .HasColumnType("uuid");
+        modelo.Entity<Nota>()
+            .Property(n => n.UsuarioId)
+            .HasColumnType("uuid");
 
-    modelo.Entity<Nota>()
-        .Property(n => n.CreadoEn)
-        .HasColumnType("timestamp with time zone");
+        modelo.Entity<Nota>()
+            .Property(n => n.CarpetaId)
+            .HasColumnType("uuid");
 
-    // Un usuario tiene muchas notas
-    modelo.Entity<Nota>()
-        .HasOne(n => n.Usuario)
-        .WithMany(u => u.Notas)
-        .HasForeignKey(n => n.UsuarioId)
-        .OnDelete(DeleteBehavior.Cascade);
-}
+        modelo.Entity<Nota>()
+            .Property(n => n.CreadoEn)
+            .HasColumnType("timestamp with time zone");
+
+        modelo.Entity<Nota>()
+            .HasOne(n => n.Usuario)
+            .WithMany(u => u.Notas)
+            .HasForeignKey(n => n.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelo.Entity<Nota>()
+            .HasOne(n => n.Carpeta)
+            .WithMany()
+            .HasForeignKey(n => n.CarpetaId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelo.Entity<Carpeta>()
+            .Property(c => c.Id)
+            .HasColumnType("uuid");
+
+        modelo.Entity<Carpeta>()
+            .Property(c => c.UsuarioId)
+            .HasColumnType("uuid");
+
+        modelo.Entity<Carpeta>()
+            .Property(c => c.CreadoEn)
+            .HasColumnType("timestamp with time zone");
+
+        modelo.Entity<Carpeta>()
+            .HasOne(c => c.Usuario)
+            .WithMany(u => u.Carpetas)
+            .HasForeignKey(c => c.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }

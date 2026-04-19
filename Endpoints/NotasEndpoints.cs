@@ -6,7 +6,7 @@ namespace NotasNzx.Endpoints;
 
 public static class NotasEndpoints
 {
-    public static async Task MapearEndpoints(this WebApplication app)
+    public static void MapearEndpoints(this WebApplication app)
     {
         var grupo = app.MapGroup("/api/notas")
                        .WithTags("Notas")

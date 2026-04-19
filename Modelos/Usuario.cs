@@ -16,6 +16,7 @@ public class Usuario
     public DateTime UltimoReset { get; set; } = DateTime.UtcNow.Date;
 
     public List<Nota> Notas { get; set; } = [];
+    public List<Carpeta> Carpetas { get; set; } = [];
 
     private static string GenerarApiKey() =>
         $"nzx_{Guid.NewGuid():N}{Guid.NewGuid():N}"[..48];

@@ -20,7 +20,7 @@ public class NotasServicio(AppDbContext db) : INotasServicio
         => await db.Notas
             .Where(n => n.UsuarioId == usuarioId)
             .OrderByDescending(n => n.CreadoEn)
-            .Select(n => new NotaRespuesta(n.Id, n.Contenido, n.CreadoEn))
+            .Select(n => new NotaRespuesta(n.Id, n.Contenido, n.CreadoEn, n.CarpetaId))
             .ToListAsync();
 
     public async Task<NotaRespuesta?> ObtenerPorId(Guid id, Guid usuarioId)
@@ -28,7 +28,8 @@ public class NotasServicio(AppDbContext db) : INotasServicio
         var nota = await db.Notas
             .FirstOrDefaultAsync(n => n.Id == id && n.UsuarioId == usuarioId);
 
-        return nota is null ? null : new NotaRespuesta(nota.Id, nota.Contenido, nota.CreadoEn);
+        return nota is null ? null : new NotaRespuesta(nota.Id, nota.Contenido, nota.CreadoEn, nota.CarpetaId);
+
     }
 
     public async Task<NotaRespuesta> Crear(string contenido, Guid usuarioId)
@@ -41,7 +42,7 @@ public class NotasServicio(AppDbContext db) : INotasServicio
 
         db.Notas.Add(nota);
         await db.SaveChangesAsync();
-        return new NotaRespuesta(nota.Id, nota.Contenido, nota.CreadoEn);
+        return new NotaRespuesta(nota.Id, nota.Contenido, nota.CreadoEn, nota.CarpetaId);
     }
 
     public async Task<bool> Eliminar(Guid id, Guid usuarioId)
@@ -65,6 +66,6 @@ public class NotasServicio(AppDbContext db) : INotasServicio
 
         nota.Contenido = contenido.Trim();
         await db.SaveChangesAsync();
-        return new NotaRespuesta(nota.Id, nota.Contenido, nota.CreadoEn);
+        return new NotaRespuesta(nota.Id, nota.Contenido, nota.CreadoEn, nota.CarpetaId);
     }
 }

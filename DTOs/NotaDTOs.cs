@@ -3,11 +3,20 @@ namespace NotasNzx.DTOs;
 // Notas
 public record CrearNotaRequest(string Contenido);
 
+public record ActualizarNotaRequest(string Contenido);
+
 public record NotaRespuesta(
     Guid Id,
     string Contenido,
-    DateTime CreadoEn
+    DateTime CreadoEn,
+    Guid? CarpetaId
 );
+public record MoverNotaRequest(Guid? CarpetaId);
+
+// Carpetas
+public record CrearCarpetaRequest(string Nombre);
+public record ActualizarCarpetaRequest(string Nombre);
+public record CarpetaRespuesta(Guid Id, string Nombre, DateTime CreadoEn);
 
 // Autenticación
 public record RegistrarRequest(string Email, string Contraseña);
@@ -25,5 +34,3 @@ public record PerfilRespuesta(
 
 // Envoltura estándar
 public record Respuesta<T>(bool Exito, string Mensaje, T? Data);
-
-public record ActualizarNotaRequest(string Contenido);
