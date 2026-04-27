@@ -22,29 +22,22 @@ public static class CarpetasEndpoints
         }).WithSummary("Obtiene todas las carpetas");
 
         // POST crear carpeta
-        grupo.MapPost("/", async (CrearCarpetaRequest solicitud, ClaimsPrincipal usuario, ICarpetasServicio servicio) =>
-        {
-            if (string.IsNullOrWhiteSpace(solicitud.Nombre))
-                return Results.BadRequest(new Respuesta<CarpetaRespuesta>(
-                    Exito: false, Mensaje: "El nombre no puede estar vacío", Data: null));
+grupo.MapPost("/", async (CrearCarpetaRequest solicitud, ClaimsPrincipal usuario, ICarpetasServicio servicio) =>
+{
+    if (string.IsNullOrWhiteSpace(solicitud.Nombre))
+        return Results.BadRequest(new Respuesta<CarpetaRespuesta>(
+            Exito: false, Mensaje: "El nombre no puede estar vacío", Data: null));
 
-            var usuarioId = ObtenerUsuarioId(usuario);
-            var carpeta = await servicio.Crear(solicitud.Nombre, usuarioId);
-            return Results.Created($"/api/carpetas/{carpeta.Id}", new Respuesta<CarpetaRespuesta>(
-                Exito: true, Mensaje: "Carpeta creada", Data: carpeta));
-        }).WithSummary("Crea una carpeta");
+    var usuarioId = ObtenerUsuarioId(usuario);
+    var (carpeta, error) = await servicio.Crear(solicitud.Nombre, usuarioId);
 
-        // DELETE eliminar carpeta
-        grupo.MapDelete("/{id:guid}", async (Guid id, ClaimsPrincipal usuario, ICarpetasServicio servicio) =>
-        {
-            var usuarioId = ObtenerUsuarioId(usuario);
-            var eliminada = await servicio.Eliminar(id, usuarioId);
-            if (!eliminada)
-                return Results.NotFound(new Respuesta<object>(
-                    Exito: false, Mensaje: "Carpeta no encontrada", Data: null));
-            return Results.Ok(new Respuesta<object>(
-                Exito: true, Mensaje: "Carpeta eliminada", Data: null));
-        }).WithSummary("Elimina una carpeta");
+    if (error is not null)
+        return Results.BadRequest(new Respuesta<CarpetaRespuesta>(
+            Exito: false, Mensaje: error, Data: null));
+
+    return Results.Created($"/api/carpetas/{carpeta!.Id}", new Respuesta<CarpetaRespuesta>(
+        Exito: true, Mensaje: "Carpeta creada", Data: carpeta));
+}).WithSummary("Crea una carpeta");
 
         // PUT mover nota a carpeta
         grupo.MapPut("/mover-nota/{notaId:guid}", async (Guid notaId, MoverNotaRequest solicitud, ClaimsPrincipal usuario, ICarpetasServicio servicio) =>

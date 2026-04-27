@@ -8,14 +8,17 @@ namespace NotasNzx.Servicios;
 public interface ICarpetasServicio
 {
     Task<IEnumerable<CarpetaRespuesta>> ObtenerTodas(Guid usuarioId);
-    Task<CarpetaRespuesta> Crear(string nombre, Guid usuarioId);
+    Task<(CarpetaRespuesta? Carpeta, string? Error)> Crear(string nombre, Guid usuarioId);
     Task<CarpetaRespuesta?> Actualizar(Guid id, string nombre, Guid usuarioId);
     Task<bool> Eliminar(Guid id, Guid usuarioId);
     Task<bool> MoverNota(Guid notaId, Guid? carpetaId, Guid usuarioId);
+    Task<int> ContarCarpetas(Guid usuarioId);
 }
 
 public class CarpetasServicio(AppDbContext db) : ICarpetasServicio
 {
+    private const int LimiteCarpetasFree = 2;
+
     public async Task<IEnumerable<CarpetaRespuesta>> ObtenerTodas(Guid usuarioId)
         => await db.Carpetas
             .Where(c => c.UsuarioId == usuarioId)
@@ -23,8 +26,19 @@ public class CarpetasServicio(AppDbContext db) : ICarpetasServicio
             .Select(c => new CarpetaRespuesta(c.Id, c.Nombre, c.CreadoEn))
             .ToListAsync();
 
-    public async Task<CarpetaRespuesta> Crear(string nombre, Guid usuarioId)
+    public async Task<(CarpetaRespuesta? Carpeta, string? Error)> Crear(string nombre, Guid usuarioId)
     {
+        // Verificar límite Free
+        var usuario = await db.Usuarios.FindAsync(usuarioId);
+        if (usuario is null) return (null, "Usuario no encontrado");
+
+        if (usuario.Plan == Plan.Free)
+        {
+            var totalCarpetas = await db.Carpetas.CountAsync(c => c.UsuarioId == usuarioId);
+            if (totalCarpetas >= LimiteCarpetasFree)
+                return (null, $"Has alcanzado el límite de {LimiteCarpetasFree} carpetas del plan Free. Actualiza a Pro para crear carpetas ilimitadas.");
+        }
+
         var carpeta = new Carpeta
         {
             Nombre = nombre.Trim(),
@@ -32,7 +46,7 @@ public class CarpetasServicio(AppDbContext db) : ICarpetasServicio
         };
         db.Carpetas.Add(carpeta);
         await db.SaveChangesAsync();
-        return new CarpetaRespuesta(carpeta.Id, carpeta.Nombre, carpeta.CreadoEn);
+        return (new CarpetaRespuesta(carpeta.Id, carpeta.Nombre, carpeta.CreadoEn), null);
     }
 
     public async Task<CarpetaRespuesta?> Actualizar(Guid id, string nombre, Guid usuarioId)
@@ -64,4 +78,7 @@ public class CarpetasServicio(AppDbContext db) : ICarpetasServicio
         await db.SaveChangesAsync();
         return true;
     }
+
+    public async Task<int> ContarCarpetas(Guid usuarioId)
+        => await db.Carpetas.CountAsync(c => c.UsuarioId == usuarioId);
 }

@@ -6,7 +6,7 @@ namespace NotasNzx.Endpoints;
 
 public static class NotasEndpoints
 {
-    public static void MapearEndpoints(this WebApplication app)
+    public static async Task MapearEndpoints(this WebApplication app)
     {
         var grupo = app.MapGroup("/api/notas")
                        .WithTags("Notas")
@@ -47,32 +47,40 @@ public static class NotasEndpoints
         .WithSummary("Obtiene una nota por ID");
 
         // POST crear nota
-        grupo.MapPost("/", async (CrearNotaRequest solicitud, ClaimsPrincipal usuario, INotasServicio servicio) =>
-        {
-            if (string.IsNullOrWhiteSpace(solicitud.Contenido))
-                return Results.BadRequest(new Respuesta<NotaRespuesta>(
-                    Exito: false,
-                    Mensaje: "El contenido no puede estar vacío",
-                    Data: null
-                ));
+       // POST crear nota
+grupo.MapPost("/", async (CrearNotaRequest solicitud, ClaimsPrincipal usuario, INotasServicio servicio) =>
+{
+    if (string.IsNullOrWhiteSpace(solicitud.Contenido))
+        return Results.BadRequest(new Respuesta<NotaRespuesta>(
+            Exito: false,
+            Mensaje: "El contenido no puede estar vacío",
+            Data: null
+        ));
 
-            if (solicitud.Contenido.Length > 1000)
-                return Results.BadRequest(new Respuesta<NotaRespuesta>(
-                    Exito: false,
-                    Mensaje: "El contenido no puede superar los 1000 caracteres",
-                    Data: null
-                ));
+    if (solicitud.Contenido.Length > 1000)
+        return Results.BadRequest(new Respuesta<NotaRespuesta>(
+            Exito: false,
+            Mensaje: "El contenido no puede superar los 1000 caracteres",
+            Data: null
+        ));
 
-            var usuarioId = ObtenerUsuarioId(usuario);
-            var nota = await servicio.Crear(solicitud.Contenido, usuarioId);
+    var usuarioId = ObtenerUsuarioId(usuario);
+    var (nota, error) = await servicio.Crear(solicitud.Contenido, usuarioId);
 
-            return Results.Created($"/api/notas/{nota.Id}", new Respuesta<NotaRespuesta>(
-                Exito: true,
-                Mensaje: "Nota creada correctamente",
-                Data: nota
-            ));
-        })
-        .WithSummary("Crea una nueva nota");
+    if (error is not null)
+        return Results.BadRequest(new Respuesta<NotaRespuesta>(
+            Exito: false,
+            Mensaje: error,
+            Data: null
+        ));
+
+    return Results.Created($"/api/notas/{nota!.Id}", new Respuesta<NotaRespuesta>(
+        Exito: true,
+        Mensaje: "Nota creada correctamente",
+        Data: nota
+    ));
+})
+.WithSummary("Crea una nueva nota");
 
 
         //PUT actualizar nota
