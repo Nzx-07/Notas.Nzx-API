@@ -66,5 +66,22 @@ public static class PerfilEndpoints
             ));
         })
         .WithSummary("Actualiza tu plan a Pro");
+
+        // Endpoint temporal para testing - ELIMINAR EN PRODUCCIÓN
+grupo.MapPost("/upgrade-test/{email}", async (string email, AppDbContext db) =>
+{
+    var usuario = await db.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+    if (usuario is null)
+        return Results.NotFound();
+
+    usuario.Plan = Plan.Pro;
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new Respuesta<object>(
+        Exito: true,
+        Mensaje: "Plan actualizado a Pro",
+        Data: null
+    ));
+});
     }
 }
