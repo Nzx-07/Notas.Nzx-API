@@ -14,7 +14,7 @@ public static class PerfilEndpoints
                        .WithTags("Perfil")
                        .RequireAuthorization();
 
-        // GET /api/perfil - Ver tu plan y API Key
+        // GET /api/perfil
         grupo.MapGet("/", async (ClaimsPrincipal claims, AppDbContext db) =>
         {
             var usuarioId = Guid.Parse(claims.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -33,13 +33,14 @@ public static class PerfilEndpoints
                     Plan: usuario.Plan.ToString(),
                     ApiKey: usuario.ApiKey,
                     RequestsHoy: usuario.RequestsHoy,
-                    LimiteRequests: limite
+                    LimiteRequests: limite,
+                    TemaActivo: usuario.TemaActivo
                 )
             ));
         })
         .WithSummary("Obtiene tu perfil, plan y API Key");
 
-        // POST /api/perfil/upgrade - Subir a Pro (simulado por ahora, Stripe va en Fase 5)
+        // POST /api/perfil/upgrade
         grupo.MapPost("/upgrade", async (ClaimsPrincipal claims, AppDbContext db) =>
         {
             var usuarioId = Guid.Parse(claims.FindFirstValue(ClaimTypes.NameIdentifier)!);

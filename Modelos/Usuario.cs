@@ -15,6 +15,9 @@ public class Usuario
     public int RequestsHoy { get; set; } = 0;
     public DateTime UltimoReset { get; set; } = DateTime.UtcNow.Date;
 
+    // Tema activo del usuario
+    public string TemaActivo { get; set; } = "blanco";
+
     public List<Nota> Notas { get; set; } = [];
     public List<Carpeta> Carpetas { get; set; } = [];
 

@@ -51,7 +51,6 @@ if (builder.Environment.IsProduction())
     }
     else
     {
-        // Fallback a SQLite si no hay DATABASE_URL
         builder.Services.AddDbContext<AppDbContext>(opciones =>
             opciones.UseSqlite("Data Source=notas.db"));
     }
@@ -66,6 +65,7 @@ else
 builder.Services.AddScoped<INotasServicio, NotasServicio>();
 builder.Services.AddScoped<IAuthServicio, AuthServicio>();
 builder.Services.AddScoped<ICarpetasServicio, CarpetasServicio>();
+builder.Services.AddScoped<ITemasServicio, TemasServicio>();
 
 // JWT
 var claveJwt = builder.Configuration["Jwt:Clave"]!;
@@ -117,8 +117,8 @@ app.UseMiddleware<ApiKeyMiddleware>();
 
 // Endpoints
 app.MapearAuthEndpoints();
-app.MapearEndpoints();
 app.MapearPerfilEndpoints();
 app.MapearCarpetasEndpoints();
+app.MapearTemasEndpoints();
 
 app.Run();
