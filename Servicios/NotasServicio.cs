@@ -17,7 +17,6 @@ public interface INotasServicio
 
 public class NotasServicio(AppDbContext db) : INotasServicio
 {
-    private const int LimiteNotasFree = 7;
 
     public async Task<IEnumerable<NotaRespuesta>> ObtenerTodas(Guid usuarioId)
         => await db.Notas
@@ -36,17 +35,6 @@ public class NotasServicio(AppDbContext db) : INotasServicio
 
     public async Task<(NotaRespuesta? Nota, string? Error)> Crear(string contenido, Guid usuarioId)
     {
-        // Verificar límite Free
-        var usuario = await db.Usuarios.FindAsync(usuarioId);
-        if (usuario is null) return (null, "Usuario no encontrado");
-
-        if (usuario.Plan == Plan.Free)
-        {
-            var totalNotas = await db.Notas.CountAsync(n => n.UsuarioId == usuarioId);
-            if (totalNotas >= LimiteNotasFree)
-                return (null, $"Has alcanzado el límite de {LimiteNotasFree} notas del plan Free. Actualiza a Pro para crear notas ilimitadas.");
-        }
-
         var nota = new Nota
         {
             Contenido = contenido.Trim(),
