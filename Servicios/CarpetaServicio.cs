@@ -28,18 +28,7 @@ public class CarpetasServicio(AppDbContext db) : ICarpetasServicio
 
     public async Task<(CarpetaRespuesta? Carpeta, string? Error)> Crear(string nombre, Guid usuarioId)
     {
-        // Verificar límite Free
-        var usuario = await db.Usuarios.FindAsync(usuarioId);
-        if (usuario is null) return (null, "Usuario no encontrado");
-
-        if (usuario.Plan == Plan.Free)
-        {
-            var totalCarpetas = await db.Carpetas.CountAsync(c => c.UsuarioId == usuarioId);
-            if (totalCarpetas >= LimiteCarpetasFree)
-                return (null, $"Has alcanzado el límite de {LimiteCarpetasFree} carpetas del plan Free. Actualiza a Pro para crear carpetas ilimitadas.");
-        }
-
-        var carpeta = new Carpeta
+        var carpeta = new Carpeta 
         {
             Nombre = nombre.Trim(),
             UsuarioId = usuarioId

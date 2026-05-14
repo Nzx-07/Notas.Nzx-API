@@ -40,32 +40,6 @@ public static class PerfilEndpoints
         })
         .WithSummary("Obtiene tu perfil, plan y API Key");
 
-        // POST /api/perfil/upgrade
-        grupo.MapPost("/upgrade", async (ClaimsPrincipal claims, AppDbContext db) =>
-        {
-            var usuarioId = Guid.Parse(claims.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var usuario = await db.Usuarios.FindAsync(usuarioId);
-
-            if (usuario is null)
-                return Results.NotFound();
-
-            if (usuario.Plan == Plan.Pro)
-                return Results.BadRequest(new Respuesta<object>(
-                    Exito: false,
-                    Mensaje: "Ya tienes el plan Pro",
-                    Data: null
-                ));
-
-            usuario.Plan = Plan.Pro;
-            await db.SaveChangesAsync();
-
-            return Results.Ok(new Respuesta<object>(
-                Exito: true,
-                Mensaje: "Plan actualizado a Pro correctamente",
-                Data: null
-            ));
-        })
-        .WithSummary("Actualiza tu plan a Pro");
     }
     
 }
