@@ -54,10 +54,6 @@ public class TemasServicio(AppDbContext db) : ITemasServicio
         var tema = TemasDisponibles.FirstOrDefault(t => t.Id == temaId);
         if (tema == default) return (false, "Tema no encontrado");
 
-        // Verificar que el usuario Pro puede acceder a temas Pro
-        if (tema.EsPro && usuario.Plan == Plan.Free)
-            return (false, "Este tema es exclusivo del plan Pro. Actualiza tu plan para acceder.");
-
         usuario.TemaActivo = temaId;
         await db.SaveChangesAsync();
         return (true, null);
