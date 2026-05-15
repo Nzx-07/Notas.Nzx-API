@@ -89,13 +89,7 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Migraciones automáticas solo en producción
-if (app.Environment.IsProduction())
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
+
 
 app.UseCors("Frontend");
 
