@@ -1,3 +1,4 @@
+```csharp id="g7ww5x"
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,8 @@ using NotasNzx.Middleware;
 using NotasNzx.Servicios;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
 
 // CORS
 builder.Services.AddCors(opciones =>
@@ -25,86 +28,32 @@ builder.Services.AddCors(opciones =>
     });
 });
 
-// Base de datos — PostgreSQL en producción, SQLite en local
-if (builder.Environment.IsProduction())
-{
-    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") 
-                   ?? Environment.GetEnvironmentVariable("ConnectionStrings__BaseDatos");
-    
-    if (!string.IsNullOrEmpty(databaseUrl))
-    {
-        string npgsqlConnection;
-        
-        if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres://"))
-        {
-            var uri = new Uri(databaseUrl);
-            var userInfo = uri.UserInfo.Split(':');
-            npgsqlConnection = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
-        }
-        else
-        {
-            npgsqlConnection = databaseUrl;
-        }
-        
-        builder.Services.AddDbContext<AppDbContext>(opciones =>
-            opciones.UseNpgsql(npgsqlConnection));
-    }
-    else
-    {
-        builder.Services.AddDbContext<AppDbContext>(opciones =>
-            opciones.UseSqlite("Data Source=notas.db"));
-    }
-}
-else
-{
-    builder.Services.AddDbContext<AppDbContext>(opciones =>
-        opciones.UseSqlite(builder.Configuration.GetConnectionString("BaseDatos")));
-}
+// Base de datos
+// ...
 
 // Servicios
-builder.Services.AddScoped<INotasServicio, NotasServicio>();
-builder.Services.AddScoped<IAuthServicio, AuthServicio>();
-builder.Services.AddScoped<ICarpetasServicio, CarpetasServicio>();
-builder.Services.AddScoped<ITemasServicio, TemasServicio>();
+// ...
 
 // JWT
-var claveJwt = builder.Configuration["Jwt:Clave"]!;
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(opciones =>
-    {
-        opciones.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Emisor"],
-            ValidAudience = builder.Configuration["Jwt:Audiencia"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(claveJwt))
-        };
-    });
+// ...
 
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 
-builder.Services.AddCors(opciones => 
-{
-    opciones.AddPolicy("VercelPolicy", politica => 
-    {
-        politica
-                .WithOrigins("https://notas-nzx-web.vercel.app")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-    });
-});
-
 var app = builder.Build();
-
-app.MapControllers();
 
 app.UseCors("Frontend");
 
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Middleware de API Key
+app.UseMiddleware<ApiKeyMiddleware>();
+
+app.MapControllers();
+
 app.MapOpenApi();
+
 app.MapScalarApiReference(opciones =>
 {
     opciones.Title = "Notas.Nzx";
@@ -113,12 +62,6 @@ app.MapScalarApiReference(opciones =>
         bearer.Token = "tu-token-jwt-aquí";
     });
 });
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-// Middleware de API Key
-app.UseMiddleware<ApiKeyMiddleware>();
 
 // Endpoints
 app.MapearAuthEndpoints();
