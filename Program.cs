@@ -1,4 +1,3 @@
-```csharp id="g7ww5x"
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -29,13 +28,10 @@ builder.Services.AddCors(opciones =>
 });
 
 // Base de datos
-// ...
 
 // Servicios
-// ...
 
 // JWT
-// ...
 
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
