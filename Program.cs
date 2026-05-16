@@ -33,21 +33,8 @@ if (builder.Environment.IsProduction())
 
     if (!string.IsNullOrEmpty(databaseUrl))
     {
-        string npgsqlConnection;
-
-        if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres://"))
-        {
-            var uri = new Uri(databaseUrl);
-            var userInfo = uri.UserInfo.Split(':');
-            npgsqlConnection = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
-        }
-        else
-        {
-            npgsqlConnection = databaseUrl;
-        }
-
         builder.Services.AddDbContext<AppDbContext>(opciones =>
-            opciones.UseNpgsql(npgsqlConnection));
+            opciones.UseNpgsql(databaseUrl));
     }
     else
     {
