@@ -87,9 +87,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(opciones => 
+{
+    opciones.AddPolicy("VercelPolicy", politica => 
+    {
+        politica
+                .WithOrigins("https://notas-nzx-web.vercel.app")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
-
+app.MapControllers();
 
 app.UseCors("Frontend");
 
