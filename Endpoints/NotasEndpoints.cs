@@ -46,7 +46,6 @@ public static class NotasEndpoints
         })
         .WithSummary("Obtiene una nota por ID");
 
-        // POST crear nota
        // POST crear nota
 grupo.MapPost("/", async (CrearNotaRequest solicitud, ClaimsPrincipal usuario, INotasServicio servicio) =>
 {
@@ -54,13 +53,6 @@ grupo.MapPost("/", async (CrearNotaRequest solicitud, ClaimsPrincipal usuario, I
         return Results.BadRequest(new Respuesta<NotaRespuesta>(
             Exito: false,
             Mensaje: "El contenido no puede estar vacío",
-            Data: null
-        ));
-
-    if (solicitud.Contenido.Length > 1000)
-        return Results.BadRequest(new Respuesta<NotaRespuesta>(
-            Exito: false,
-            Mensaje: "El contenido no puede superar los 1000 caracteres",
             Data: null
         ));
 
