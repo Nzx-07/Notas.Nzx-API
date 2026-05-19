@@ -13,4 +13,7 @@ public class Nota
     // Relación opcional con carpeta
     public Guid? CarpetaId { get; set; }
     public Carpeta? Carpeta { get; set; }
+
+    //Titulo
+    public string Titulo { get; set; } = "Nueva nota";
 }

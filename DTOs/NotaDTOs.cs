@@ -1,9 +1,9 @@
 namespace NotasNzx.DTOs;
 
 // Notas
-public record CrearNotaRequest(string Contenido);
-public record ActualizarNotaRequest(string Contenido);
-public record NotaRespuesta(Guid Id, string Contenido, DateTime CreadoEn, Guid? CarpetaId);
+public record CrearNotaRequest(string Titulo, string Contenido);
+public record ActualizarNotaRequest(string? Titulo, string? Contenido);
+public record NotaRespuesta(Guid Id, string Titulo, string Contenido, DateTime CreadoEn, Guid? CarpetaId);
 public record MoverNotaRequest(Guid? CarpetaId);
 
 // Carpetas
