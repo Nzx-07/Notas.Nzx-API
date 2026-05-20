@@ -33,13 +33,11 @@ public class NotasServicio(AppDbContext db) : INotasServicio
     }
 
     public async Task<(NotaRespuesta? Nota, string? Error)> Crear(string titulo, string contenido, Guid usuarioId)
-    {
-        Contenido = contenido?.Trim() ?? "",
-        
+    {        
         var nota = new Nota
         {
             Titulo = titulo.Trim(),
-            Contenido = contenido.Trim(),
+            Contenido = contenido.Trim() ?? "",
             UsuarioId = usuarioId
         };
 
