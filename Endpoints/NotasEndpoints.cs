@@ -36,10 +36,6 @@ public static class NotasEndpoints
         // POST crear nota
         grupo.MapPost("/", async (CrearNotaRequest solicitud, ClaimsPrincipal usuario, INotasServicio servicio) =>
         {
-            if (string.IsNullOrWhiteSpace(solicitud.Contenido))
-                return Results.BadRequest(new Respuesta<NotaRespuesta>(
-                    Exito: false, Mensaje: "El contenido no puede estar vacío", Data: null));
-
             var usuarioId = ObtenerUsuarioId(usuario);
             var (nota, error) = await servicio.Crear(solicitud.Titulo ?? "Nueva nota", solicitud.Contenido, usuarioId);
 
